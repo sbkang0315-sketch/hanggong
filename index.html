@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>조선 선비 AI - 어린이 프롬프트 서당</title>
+    <title>조선 선비 AI - 5단계 프롬프트 서당</title>
     
-    <!-- Google Fonts: 어린이 친화적이고 전통적인 글꼴 구성 -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Myeongjo:wght@700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS for styling -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -27,7 +27,6 @@
     </script>
     
     <style>
-        /* 전통 한지 느낌의 부드러운 격자 무늬 배경 */
         .bg-hanji {
             background-color: #FCFAF2;
             background-image: 
@@ -36,32 +35,19 @@
             background-size: 24px 24px;
             background-position: 0 0, 12px 12px;
         }
-
-        /* 대화창 내부 고정 높이 스크롤 세팅 */
-        .chat-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .chat-scrollbar::-webkit-scrollbar-track {
-            background: #F3ECE0;
-            border-radius: 999px;
-        }
-        .chat-scrollbar::-webkit-scrollbar-thumb {
-            background: #CDBFA8;
-            border-radius: 999px;
-            border: 2px solid #F3ECE0;
-        }
-        .chat-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #948169;
-        }
-
-        /* 프롬프트 성공 배지 펄스 효과 */
+        .chat-scrollbar::-webkit-scrollbar { width: 8px; }
+        .chat-scrollbar::-webkit-scrollbar-track { background: #F3ECE0; border-radius: 999px; }
+        .chat-scrollbar::-webkit-scrollbar-thumb { background: #CDBFA8; border-radius: 999px; border: 2px solid #F3ECE0; }
+        .chat-scrollbar::-webkit-scrollbar-thumb:hover { background: #948169; }
         @keyframes custom-pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
-        .badge-animation {
-            animation: custom-pulse 2s infinite ease-in-out;
-        }
+        .badge-animation { animation: custom-pulse 2s infinite ease-in-out; }
+        
+        /* 5단계 네비게이터를 위한 숨김 처리용 클래스 */
+        .step-inactive { color: #a8a29e; font-weight: 500; border-bottom: none; }
+        .step-active { color: #1c1917; font-weight: 900; border-bottom: 2px solid #1c1917; padding-bottom: 4px; }
     </style>
 </head>
 <body class="bg-hanji min-h-screen text-stone-800 flex flex-col selection:bg-amber-200 selection:text-amber-900 overflow-x-hidden">
@@ -70,17 +56,16 @@
     <header class="sticky top-0 z-40 bg-[#FCFAF2]/95 border-b-4 border-stone-800 backdrop-blur-sm py-4 px-4 md:px-8 shadow-md">
         <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             
-            <!-- 서당 로고와 소개글 -->
             <div class="flex items-center gap-3">
                 <div class="bg-stone-900 text-[#FCFAF2] px-3.5 py-2 rounded-2xl shadow-md font-serif text-2xl border-2 border-stone-700 tracking-wider shrink-0 select-none">
                     書堂
                 </div>
                 <div>
                     <h1 class="text-xl md:text-2xl font-black text-stone-900 tracking-tight font-serif flex flex-wrap items-center gap-2">
-                        조선시대 선비 AI
-                        <span class="text-xs bg-amber-200 text-amber-900 px-2 py-1 rounded-full font-sans font-bold">단계별 프롬프트 교실</span>
+                        조선시대 선비 AI 
+                        <span class="text-xs bg-amber-200 text-amber-900 px-2 py-1 rounded-full font-sans font-bold">5단계 프롬프트 교실</span>
                     </h1>
-                    <p class="text-xs text-stone-600 font-medium">어려운 현대 기술 용어를 빼고, 옛날 선비님이 상상할 수 있게 3가지 단계로 나누어 설명해주세요!</p>
+                    <p class="text-xs text-stone-600 font-medium">눈에 보이지 않는 최신 기술도 선비님이 이해할 수 있게 5단계로 쪼개어 설명해보세요!</p>
                 </div>
             </div>
 
@@ -96,300 +81,304 @@
                         선비님의 이해도: 0%
                     </span>
                 </div>
-
                 <button id="resetBtn" type="button" class="hidden bg-red-800 hover:bg-red-950 text-white font-serif px-3.5 py-2 rounded-xl text-xs transition duration-300 shadow-md border-2 border-stone-800 font-bold shrink-0">
-                    🔄 처음부터 하기
+                    🔄 처음부터
                 </button>
             </div>
-
         </div>
     </header>
 
-    <!-- 자바스크립트 안전 장치 에러 경고창 -->
     <div id="debugErrorBanner" class="hidden bg-red-100 border-l-4 border-red-500 text-red-900 p-4 mx-auto max-w-6xl mt-4 rounded-xl text-xs font-bold shadow-sm">
-        ⚠️ 서당에 작은 문제가 생겼소! 아래의 메시지를 훈장님께 알려주시오: <span id="debugErrorMessage" class="underline ml-1"></span>
+        ⚠️ 오류 발생: <span id="debugErrorMessage" class="underline ml-1"></span>
     </div>
 
     <!-- 본문 학습 영역 -->
     <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
         
-        <!-- 왼쪽: 선비님과의 대화 및 단계별 입력 영역 (7칸 차지) -->
+        <!-- 왼쪽: 대화창 영역 (7칸) -->
         <div class="lg:col-span-7 flex flex-col bg-white rounded-3xl border-4 border-stone-800 shadow-xl overflow-hidden min-h-[550px] bg-[url('https://www.transparenttextures.com/patterns/lined-paper-paper.png')]">
             
-            <!-- 대화방 윗부분 띠지 -->
             <div class="bg-[#F5EFE2] border-b-2 border-stone-300 px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm font-serif font-bold text-stone-700">
-                <span class="flex items-center gap-1.5 text-base">📜 선비님에게 가르쳐 드리는 배움방</span>
+                <span class="flex items-center gap-1.5 text-base">📜 배움방</span>
                 <span id="topicIndicator" class="bg-stone-900 text-white text-xs px-3 py-1.5 rounded-full font-sans font-bold hidden">
-                    주제: 스마트폰
+                    주제: -
                 </span>
-                <span id="topicWarning" class="text-amber-800 animate-pulse font-hand text-lg font-bold">👇 아래 알록달록 주머니에서 공부할 단어를 골라주시오!</span>
+                <span id="topicWarning" class="text-amber-800 animate-pulse font-hand text-lg font-bold">👇 아래에서 공부할 단어를 고르시오!</span>
             </div>
 
-            <!-- 3단계 방 이동 현황판 (주제 선택시 표시됨) -->
-            <div id="stepNavigator" class="hidden bg-[#FCFAF6] border-b border-stone-200 px-5 py-3 flex items-center justify-around text-xs font-bold">
-                <div id="stepTab1" class="flex items-center gap-1.5 text-stone-400">
+            <!-- 5단계 방 이동 현황판 -->
+            <div id="stepNavigator" class="hidden bg-[#FCFAF6] border-b border-stone-200 px-3 py-3 grid grid-cols-5 gap-1 text-[10px] sm:text-xs text-center">
+                <div id="stepTab1" class="step-inactive flex flex-col items-center gap-1">
                     <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center font-sans">1</span>
-                    <span class="font-serif">1단계: 모양과 재료</span>
+                    <span class="font-serif">본질/외형</span>
                 </div>
-                <div class="w-8 h-[2px] bg-stone-300"></div>
-                <div id="stepTab2" class="flex items-center gap-1.5 text-stone-400">
+                <div id="stepTab2" class="step-inactive flex flex-col items-center gap-1">
                     <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center font-sans">2</span>
-                    <span class="font-serif">2단계: 작동하는 원리</span>
+                    <span class="font-serif">원리/동력</span>
                 </div>
-                <div class="w-8 h-[2px] bg-stone-300"></div>
-                <div id="stepTab3" class="flex items-center gap-1.5 text-stone-400">
+                <div id="stepTab3" class="step-inactive flex flex-col items-center gap-1">
                     <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center font-sans">3</span>
-                    <span class="font-serif">3단계: 사람들의 쓰임새</span>
+                    <span class="font-serif">조작/소통</span>
+                </div>
+                <div id="stepTab4" class="step-inactive flex flex-col items-center gap-1">
+                    <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center font-sans">4</span>
+                    <span class="font-serif">목적/쓰임</span>
+                </div>
+                <div id="stepTab5" class="step-inactive flex flex-col items-center gap-1">
+                    <span class="w-5 h-5 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center font-sans">5</span>
+                    <span class="font-serif">가치/미래</span>
                 </div>
             </div>
 
             <!-- 대화 목록판 -->
             <div id="dialogueLog" class="flex-1 p-5 overflow-y-auto space-y-4 max-h-[360px] chat-scrollbar bg-[#FFFDFB]/50">
-                
-                <!-- 환영 첫 메시지 -->
                 <div class="flex flex-col items-start transition-all duration-300">
                     <div class="bg-[#FAF7F0] text-stone-950 border-2 border-stone-300 rounded-3xl rounded-tl-none px-5 py-4 shadow-sm max-w-[85%] font-serif leading-relaxed text-base" style="background-image: url('https://www.transparenttextures.com/patterns/soft-wallpaper.png')">
-                        반갑소, 어린 유생! 나는 조선 최고의 시골 골짜기에서 오직 글만 읽으며 살아온 선비라고 하네. 
-                        요즘 세상에 마법처럼 신기한 보물들이 아주 많다고 들었소만, 늙은 나는 도무지 상상이 안 가는구려.
+                        반갑소, 어린 유생! 형체가 있는 물건이든, 보이지 않는 기술이든 나에게 5단계로 나누어 설명해주면 내가 상상력을 발휘해 보겠소!
                         <br><br>
-                        글을 모르는 어린 아우에게 설명해주듯 3가지 방을 거쳐 차근차근 가르쳐 주겠소?
-                        <br><br>
-                        <span class="text-xs bg-amber-100 text-amber-950 p-2 rounded-xl block mt-2 border border-amber-300 font-sans font-bold">💡 시작하는 법: 아래의 주머니 버튼 중 설명하고 싶은 단어를 골라 꾹 눌러주시오!</span>
+                        <span class="text-xs bg-amber-100 text-amber-950 p-2 rounded-xl block mt-2 border border-amber-300 font-sans font-bold">💡 아래의 주머니 버튼 중 하나를 골라 시작하시오!</span>
                     </div>
                     <span class="text-xs text-stone-500 mt-2 px-1.5 font-sans font-bold">조선 선비 AI</span>
                 </div>
-
             </div>
 
-            <!-- 생각 시간 로딩 애니메이션 -->
+            <!-- 로딩 -->
             <div id="loadingIndicator" class="hidden px-5 py-3.5 flex items-center gap-2 text-stone-500 bg-stone-100/90 border-t-2 border-stone-200">
                 <span class="h-2.5 w-2.5 bg-stone-800 rounded-full animate-bounce" style="animation-delay: -0.3s"></span>
                 <span class="h-2.5 w-2.5 bg-stone-800 rounded-full animate-bounce" style="animation-delay: -0.15s"></span>
                 <span class="h-2.5 w-2.5 bg-stone-800 rounded-full animate-bounce"></span>
-                <span class="text-xs font-serif font-bold text-stone-800">선비가 머리를 긁적이며 그림을 상상하는 중이오...</span>
+                <span class="text-xs font-serif font-bold text-stone-800">선비가 깊은 생각에 잠겨 있소...</span>
             </div>
 
-            <!-- 프롬프트 힌트 도우미 배너 -->
             <div id="feedbackBanner" class="bg-amber-50 border-t-2 border-b-2 border-amber-200 px-5 py-4 flex items-start gap-3 text-sm">
                 <span class="text-3xl">💡</span>
                 <div class="flex-1">
-                    <p class="font-bold text-amber-950 font-serif text-sm">서당 훈장님의 설명 비책</p>
+                    <p class="font-bold text-amber-950 font-serif text-sm">서당 훈장님의 비책</p>
                     <p id="feedbackText" class="text-amber-900 font-sans text-xs mt-1 leading-relaxed font-medium">
-                        선비님에게 어떤 물건을 가르쳐 볼까요? 아래 주머니들 중 마음에 드는 단어를 쿡 눌러서 대화를 시작해 보세요!
+                        최신 기술 단어를 선택하고 대화를 시작해 보세요!
                     </p>
                 </div>
             </div>
 
-            <!-- 하단 입력 및 단어 선택 영역 -->
+            <!-- 하단 입력 영역 -->
             <div class="p-4 bg-[#F2EDE0] border-t-2 border-stone-300">
-                <!-- 주제 고르는 공간 -->
-                <div id="topicSelectContainer" class="text-center py-3">
-                    <p class="text-stone-800 text-sm font-serif font-bold mb-4 flex items-center justify-center gap-1">
-                        <span>✨</span> 아래 주머니 중 설명해주고 싶은 것을 하나 쿡 고르시오:
-                    </p>
-                    <div id="wordsGrid" class="flex flex-wrap justify-center gap-3 max-w-xl mx-auto">
-                        <!-- 자바스크립트로 가득 채워짐 -->
+                <div id="topicSelectContainer" class="text-center py-2">
+                    <div id="wordsGrid" class="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
+                        <!-- 동적 주입 -->
                     </div>
                 </div>
 
-                <!-- 글 쓰는 입력 공간 (주제 고르면 열림) -->
                 <form id="chatForm" class="hidden flex flex-col gap-3">
-                    <!-- 단계 가이드라인 안내 문구 -->
-                    <div class="flex items-center justify-between text-xs font-bold text-stone-700 bg-white/70 px-3.5 py-2 rounded-xl border border-stone-300">
-                        <span id="stepInputGuide" class="font-serif">1단계: 이 물건은 어떤 크기나 모양, 재질을 가졌는지 겉모습을 말해주시오!</span>
-                        <span id="stepAlertBadge" class="bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md font-sans">1단계 진행중</span>
+                    <div class="flex items-center justify-between text-[11px] sm:text-xs font-bold text-stone-700 bg-white/70 px-3.5 py-2 rounded-xl border border-stone-300">
+                        <span id="stepInputGuide" class="font-serif">가이드 문구</span>
+                        <span id="stepAlertBadge" class="bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md font-sans whitespace-nowrap">단계 진행중</span>
                     </div>
-
-                    <div class="flex gap-2.5">
-                        <input
-                            type="text"
-                            id="chatInput"
-                            placeholder="예시: 손바닥만 하고 가죽과 쇠로 만들어진 납작한 상자 모양입니다..."
-                            class="flex-1 px-4 py-3.5 bg-white border-2 border-stone-400 rounded-2xl font-sans text-sm focus:outline-none focus:border-stone-800 transition shadow-inner font-medium"
-                        >
-                        <button
-                            type="submit"
-                            id="submitBtn"
-                            class="bg-stone-800 hover:bg-stone-950 text-white px-6 py-3.5 rounded-2xl font-serif text-sm font-bold transition shadow-md shrink-0 border-2 border-stone-900 active:scale-95"
-                        >
-                            설명해 주기
+                    <div class="flex gap-2">
+                        <input type="text" id="chatInput" placeholder="여기에 설명을 입력하세요..." class="flex-1 px-4 py-3 bg-white border-2 border-stone-400 rounded-xl font-sans text-sm focus:outline-none focus:border-stone-800 transition shadow-inner font-medium">
+                        <button type="submit" id="submitBtn" class="bg-stone-800 hover:bg-stone-950 text-white px-5 py-3 rounded-xl font-serif text-sm font-bold transition shadow-md shrink-0 border-2 border-stone-900 active:scale-95">
+                            전송
                         </button>
                     </div>
                 </form>
             </div>
-
         </div>
 
-        <!-- 오른쪽: 선비님 모습과 훈장님 비법서 (5칸 차지) -->
+        <!-- 오른쪽: 선비님 캐릭터와 힌트 상자 (5칸) -->
         <div class="lg:col-span-5 flex flex-col gap-6">
             
-            <!-- 선비님 감정 상태 캐릭터 박스 -->
             <div class="bg-white rounded-3xl border-4 border-stone-800 p-6 flex flex-col items-center justify-between text-center shadow-xl relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
                 
-                <!-- 대성공 축하 팝업막 -->
-                <div id="successOverlay" class="hidden absolute inset-0 bg-stone-900/20 backdrop-blur-[2px] flex flex-col items-center justify-center z-20 p-4 transition-all duration-500">
+                <div id="successOverlay" class="hidden absolute inset-0 bg-stone-900/40 backdrop-blur-[2px] flex flex-col items-center justify-center z-20 p-4 transition-all duration-500">
                     <div class="bg-[#FCFAF2] border-4 border-amber-600 rounded-3xl p-6 shadow-2xl scale-105 border-double text-center max-w-xs badge-animation">
                         <span class="text-6xl block mb-2">🎉</span>
-                        <h3 class="text-2xl font-serif font-black text-amber-950 mb-1">프롬프트 대성공!</h3>
-                        <p class="text-xs text-stone-800 font-sans leading-relaxed mb-4 font-bold">선비님이 가슴을 탁 치며 온전히 깨달으셨소! 정말 친절한 설명가요!</p>
+                        <h3 class="text-2xl font-serif font-black text-amber-950 mb-1">5단계 달성!</h3>
+                        <p class="text-xs text-stone-800 font-sans leading-relaxed mb-4 font-bold">선비님이 새로운 세상의 이치를 깨달았소!</p>
                         <button id="restartBtn" type="button" class="bg-amber-800 hover:bg-amber-950 text-[#FCFAF2] font-serif text-sm font-bold px-6 py-3 rounded-xl transition shadow-md border-2 border-amber-950">
-                            새 단어 공부하기
+                            다른 단어 도전하기
                         </button>
                     </div>
                 </div>
 
-                <!-- 선비님 상태 머리띠 -->
                 <div class="w-full text-left font-serif border-b-2 border-stone-300 pb-3 mb-4 flex justify-between items-center">
-                    <span class="font-bold text-stone-900">선비님의 상상력 상태</span>
+                    <span class="font-bold text-stone-900 text-sm">선비님의 상상력 상태</span>
                     <span id="scholarStatusBadge" class="text-xs font-sans font-bold bg-stone-200 text-stone-900 px-3 py-1.5 rounded-xl border border-stone-400">
                         전혀 모르겠음 🤯
                     </span>
                 </div>
 
-                <!-- 선비님 캐릭터 (에러 없는 div 삽입형 동적 벡터 렌더링) -->
                 <div id="scholarSvgContainer" class="w-48 h-48 my-2 transition-all duration-500 transform hover:scale-105 flex items-center justify-center">
-                    <!-- 자바스크립트로 완벽하고 버그 없게 동적 주입됨 -->
+                    <!-- SVG -->
                 </div>
 
-                <!-- 실시간 선비님 속마음 문구 -->
                 <p id="scholarMoodQuote" class="font-serif italic text-stone-700 text-sm max-w-sm mt-4 bg-stone-100 p-3 rounded-2xl border border-stone-300 w-full font-semibold">
-                    "새로운 도구를 배우고 싶구려. 아래 주머니에서 단어를 하나 골라주겠소?"
+                    "새로운 도구를 배우고 싶구려."
                 </p>
             </div>
 
-            <!-- 훈장님의 비밀 비법서 (초등·중등 눈높이 학습 가이드) -->
+            <!-- 훈장님의 비법서 (동적 힌트 반영) -->
             <div class="bg-white rounded-3xl border-4 border-stone-800 p-6 shadow-xl font-sans">
                 <h3 class="font-serif font-black text-lg text-stone-900 border-b-2 border-stone-200 pb-3 mb-4 flex items-center justify-between">
-                    <span>💡 서당 공부 비책 수첩</span>
+                    <span>💡 서당 공부 비책</span>
                     <span class="text-xs bg-amber-200 text-amber-900 px-2.5 py-1 rounded-lg font-bold">훈장 비법</span>
                 </h3>
-
+                
                 <div class="space-y-4 text-xs leading-relaxed text-stone-700 font-medium">
                     <p class="text-stone-800 leading-normal">
-                        선비님은 조선시대 사람입니다. 그래서 <strong class="text-red-800">기계, 스마트폰, 인터넷, 전기, 컴퓨터, 화면</strong> 같은 현대 단어는 들어본 적이 없답니다! 단계에 맞춰 우리 주변의 친근한 표현으로 비유해주세요.
+                        조선시대 선비님에게는 <strong class="text-red-800">화면, 데이터, 전기, 센서</strong> 같은 단어를 쓸 수 없습니다! 옛날 단어로 비유하세요.
                     </p>
 
-                    <!-- 단계별 가이드 미니 사전 -->
-                    <div class="space-y-2 bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200">
-                        <p class="font-bold text-stone-900 text-xs font-serif border-b border-amber-200 pb-1.5 mb-1.5">🔑 서당방 전용 비밀 비법 사전</p>
-                        <div class="flex flex-col gap-1">
-                            <span class="font-bold text-amber-950">1단계 [모양 방] 비법:</span>
-                            <span class="text-stone-600">유리 거울, 쇠로 된 납작한 상자, 종이 한 장처럼 얇은 기판 등 시각적으로 묘사하세요!</span>
-                        </div>
-                        <div class="flex flex-col gap-1 mt-1">
-                            <span class="font-bold text-amber-950">2단계 [원리 방] 비법:</span>
-                            <span class="text-stone-600">배터리 대신 "하늘의 번개 기운", "불이 타오르는 힘"처럼 자연물로 비유하세요!</span>
-                        </div>
-                        <div class="flex flex-col gap-1 mt-1">
-                            <span class="font-bold text-amber-950">3단계 [쓰임새 방] 비법:</span>
-                            <span class="text-stone-600">"멀리 있는 친구와 편지를 순식간에 나누는 요술 거울"처럼 생활 속 편리함을 설명하세요!</span>
-                        </div>
-                    </div>
-
-                    <!-- 실시간 힌트 알람 상자 (주제 선택시 활성화) -->
+                    <!-- 단계별 전용 동적 힌트 상자 -->
                     <div id="dynamicHintBox" class="bg-amber-50 border-2 border-amber-300 p-4 rounded-2xl hidden transition-all duration-300">
-                        <p class="font-bold text-amber-950 font-serif mb-1 text-sm">🎯 훈장님이 보낸 특급 힌트!</p>
-                        <p id="dynamicHintText" class="text-amber-900 text-xs leading-relaxed font-bold"></p>
+                        <p class="font-bold text-amber-950 font-serif mb-2 text-sm flex items-center gap-1"><span id="hintStepLabel">1단계</span> 맞춤 힌트 🎯</p>
+                        <p id="dynamicHintText" class="text-amber-900 text-[13px] leading-relaxed font-bold break-keep"></p>
                     </div>
 
                     <div class="p-4 bg-stone-100 rounded-2xl text-[11px] border border-stone-300 leading-normal">
-                        <p class="font-bold text-stone-900 text-xs mb-1">📝 왜 단계별로 나누어 설명하나요?</p>
+                        <p class="font-bold text-stone-900 text-xs mb-1">📝 왜 5단계로 설명하나요?</p>
                         <p class="text-stone-600 font-medium">
-                            인공지능(AI)은 스스로 상상할 수 있는 공통적인 상식이 부족하답니다. 똑똑한 비서처럼 만들기 위해서는 겉모습, 핵심 작동 원리, 사용 목적을 차례대로 명확하게 알려주는 프롬프트 설계법이 필요합니다.
+                            최신 기술은 형태가 없는 경우가 많아요(AI, 메타버스 등). 본질, 원리, 조작법, 쓰임새, 그리고 사회에 미치는 영향까지 AI에게 단계별로 논리적으로 지시하는 법을 배우기 위함입니다.
                         </p>
                     </div>
                 </div>
             </div>
 
         </div>
-
     </main>
 
-    <!-- 안심 토스트 알람창 -->
     <div id="toastBox" class="hidden fixed bottom-6 right-6 bg-stone-900 text-stone-100 px-5 py-3 rounded-2xl shadow-2xl border-2 border-stone-600 max-w-sm z-50 flex items-center gap-3 transition-all duration-300 transform translate-y-10 opacity-0">
         <span class="text-2xl">💡</span>
         <p id="toastMessage" class="text-xs font-sans font-bold"></p>
     </div>
 
-    <!-- 푸터 -->
-    <footer class="mt-auto py-6 border-t-4 border-stone-800 bg-[#F2EDE0] text-center text-xs text-stone-700 font-sans">
-        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-            <span class="font-bold">ⓒ 2026 프롬프트 서당 (초등·중등 인공지능 배움터)</span>
-            <span class="font-serif font-black text-stone-800">"모양, 원리, 쓰임새를 차례로 차근차근 일깨워주는 것이 참된 배움이오!"</span>
-        </div>
-    </footer>
-
-    <!-- 애플리케이션 메인 엔진 및 단계별 로직 구현 -->
+    <!-- 스크립트 엔진 -->
     <script>
-        // 초등 및 중등 학생들을 위해 3단계 학습 가이드가 연계된 단어 사전 세트
+        // 10가지 최신 단어 세트 및 5단계 맞춤형 힌트
         const KIDS_WORDS = [
             { 
-                word: "스마트폰", 
-                desc: "손바닥 요술 거울 상자", 
-                hint: "1단계: 얇고 평평한 무쇠 조각에 매끄러운 거울 유리가 붙은 모양을 묘사하세요. 2단계: 번개 기운(배터리)을 넣어 화면이 켜지게 한다고 비유해보세요. 3단계: 주머니에 쏙 넣어 다니며 언제든 소식을 전하는 요술 거울로 용도를 밝히세요!" 
+                word: "인공지능", 
+                hints: [
+                    "이것은 만질 수 있는 상자가 아닙니다. 형태가 없고 보이지 않는 '무형의 지혜로운 영혼'이나 '생각하는 기운'이라고 본질을 묘사해보세요.",
+                    "기계나 전기가 아니라, 수만 권의 서책을 한순간에 읽어치우는 '도술'이나 '스스로 깨우치는 신묘한 힘'을 가졌다고 비유해보세요.",
+                    "단추를 누르는 게 아니라, 사람처럼 '목소리'로 부르거나 '붓글씨(채팅)'로 물음을 던지며 대화를 나눈다고 설명해보세요.",
+                    "사람을 대신해서 시를 짓고, 어려운 수학을 계산(셈)하며, 모르는 것을 척척 알려주는 '지혜로운 훈장님'이나 '비서'로 쓰인다고 알려주세요.",
+                    "앞으로 조선 팔도 백성들의 수고로움을 덜어주고, 모두가 학문을 쉽게 배우게 하여 '태평성대'와 '편리함'을 가져다줄 것이라 말해주세요!"
+                ]
             },
             { 
-                word: "유튜브", 
-                desc: "움직이는 신기한 거울 장마당", 
-                hint: "1단계: 크고 판판한 나무 액자나 종이 그림판처럼 생긴 모양을 묘사해보세요. 2단계: 누군가 말하는 모습이나 춤추는 그림과 목소리 소리를 상자 안에 저장해 둔다고 설명해보세요. 3단계: 온 세상 사람들이 장기를 뽐내고 구경하는 큰 구경터라고 용도를 밝혀보세요!" 
+                word: "클라우드", 
+                hints: [
+                    "땅에 있는 건물이 아니라, 하늘 위에 둥둥 떠 있는 보이지 않는 거대한 '서고(도서관)'나 '무형의 방'이라고 묘사하세요.",
+                    "짐꾼이 책을 나르는 것이 아니라, 번개나 바람을 타고 수만 장의 그림과 서책이 눈 깜짝할 새 하늘로 올라가 저장되는 원리를 설명하세요.",
+                    "어디서든 내 이름표나 암호(비밀 열쇠)를 외치면, 하늘의 서고가 스스로 열려 내 물건을 내어준다고 조작법을 말해보세요.",
+                    "무거운 책을 등짐에 지고 다닐 필요 없이, 언제 어디서든 필요한 그림이나 소식을 빈손으로 꺼내보기 위해 쓴다고 설명하세요.",
+                    "조선 팔도 사람 누구나 지식을 잃어버리지 않고 영원히 기록을 보존하여 지혜를 나눌 수 있는 훌륭한 창고가 된다고 알려주세요."
+                ]
             },
             { 
-                word: "인터넷", 
-                desc: "소식이 오가는 보이지 않는 바람길", 
-                hint: "1단계: 눈에는 보이지 않지만 나라 전체의 집을 그물망처럼 촘촘히 엮어놓은 파란 실을 떠올리게 하세요. 2단계: 소식이 편지 봉투가 아니라 바람이나 번개 같은 물결을 타고 실을 흐르듯 움직인다고 비유해보세요. 3단계: 서울의 선비가 평양의 선비에게 눈 깜짝할 새 소식을 닿게 해주는 바람소식길이라고 설명하세요!" 
+                word: "메타버스", 
+                hints: [
+                    "몸은 내 방에 가만히 앉아있지만, 내 정신과 환영(아바타)이 들어가는 '거대한 가상의 세상'이자 '보이지 않는 놀이마당'이라고 설명하세요.",
+                    "눈을 가리는 신비한 거울을 쓰거나 요술 그림판을 열면, 거울 속으로 영혼이 빨려 들어가듯 시공간을 초월하는 원리를 비유하세요.",
+                    "손짓과 발짓을 허공에 휘두르거나, 손끝으로 그림을 만지면 가상 세계 속 내 분신(환영)이 똑같이 뛰고 걷는다고 말해주세요.",
+                    "먼 나라에 있는 벗들과 한자리에 모여 장기를 두거나, 가보지 못한 한양의 거리를 구경하며 서로 놀이를 즐길 때 쓴다고 하세요.",
+                    "멀리 떨어져 있어도 온 세상 백성들이 매일 한 마을에 사는 것처럼 모일 수 있어, 외로움이 없어지는 새로운 세상이라고 알려주세요."
+                ]
             },
             { 
-                word: "게임", 
-                desc: "가상의 요술 장기판", 
-                hint: "1단계: 반짝이는 평평한 바둑판이나 나무 장기판 위에 빛으로 만든 말과 인형들이 올라앉아 있는 겉모습을 그리세요. 2단계: 손으로 돌을 쥐는 게 아니라 마음과 손가락 끝 단추를 눌러 그림들을 마음대로 지시하고 움직인다고 설명하세요. 3단계: 정해진 놀이 규칙에 따라 멀리 사는 친구와 점수를 매겨 즐겁게 시합하는 놀이라고 완성하세요!" 
+                word: "스트리밍", 
+                hints: [
+                    "서책처럼 완성된 물건을 사는 게 아니라, 산에서 끝없이 흘러내리는 '마르지 않는 소리와 그림 우물물' 같은 무형의 흐름이라고 묘사하세요.",
+                    "물을 한꺼번에 항아리에 퍼담지(다운로드) 않고, 바람결에 실려 오는 음악소리처럼 그저 흐르는 물을 그때그때 떠마시는 원리라 비유하세요.",
+                    "종이를 넘기는 대신, 요술 판의 단추를 가볍게 톡 건드리면 흐르던 노래가 멈추고 다른 광대의 춤사위로 바로 바뀐다고 조작법을 알려주세요.",
+                    "창고에 물건을 쌓아둘(저장) 필요 없이, 수만 명의 소리꾼 노래를 단숨에 구경하고 즐기기 위해 쓰는 요술이라고 설명하세요.",
+                    "가난한 백성도 집안에 갇히지 않고 온 세상의 아름다운 소리와 풍경을 쉴 새 없이 누릴 수 있어 문화가 풍요로워진다고 말해주세요."
+                ]
             },
             { 
-                word: "배달앱", 
-                desc: "손가락 음식 심부름 요술판", 
-                hint: "1단계: 기계 거울 상자 안에 온 동네 맛있는 음식 주막의 차림표(메뉴판)가 가득 실려있는 모양을 보여주세요. 2단계: 주막까지 직접 뛰어가거나 전령을 보낼 필요 없이 화면 속 음식을 가볍게 쿡 고른다고 하세요. 3단계: 말을 타고 달리는 전령이 문 앞마당까지 따뜻한 국밥을 안심하고 배달해주는 심부름 비서라고 설명하세요!" 
+                word: "가상현실기기", 
+                hints: [
+                    "얼굴을 반쯤 덮는 크기이며, 두 눈을 가리는 묵직하고 까만 '요술 안경'이나 '거울 상자' 모양이라고 눈에 보이는 외형을 묘사하세요.",
+                    "안경을 쓰면 내 앞의 진짜 풍경은 사라지고, 안경 속 유리 빛이 사방을 둘러싸며 아예 다른 세상의 환상을 눈앞에 그려내는 도술이라고 하세요.",
+                    "머리를 돌리면 돌리는 대로 주변 풍경이 따라 움직이고, 손에 쥔 요술 막대기를 휘둘러 가상의 물건을 잡고 만진다고 조작법을 알려주세요.",
+                    "직접 가기 위험한 불길 속 훈련을 안전하게 해보거나, 한양에 가지 않고도 임금님 궁궐을 산책하듯 구경할 때 쓰는 도구라 하세요.",
+                    "누구나 다치지 않고 새로운 세상을 경험하며, 돈과 시간을 크게 절약하여 안전하고 놀라운 배움을 얻는 가치가 있다고 칭찬해주세요."
+                ]
             },
             { 
-                word: "자동차", 
-                desc: "스스로 힘차게 달리는 무쇠 가마", 
-                hint: "1단계: 말과 소 대신 둥근 무쇠 바퀴 네 개가 달린 튼튼한 무쇠 가마 겉모습을 그리세요. 2단계: 동물 대신 불을 때우거나 번개 기운을 심장에 불어넣어 스스로 맹렬한 힘으로 바퀴를 굴린다고 설명하세요. 3단계: 먼 골짜기까지 수십 리 길을 단숨에 사람을 싣고 달리는 자율 가마라고 알려주세요!" 
+                word: "자율주행차", 
+                hints: [
+                    "말이나 소가 이끌지 않는데도 바퀴 4개가 달려 스스로 굴러가는 거대한 '무쇠 가마'나 '강철 수레'의 모양을 가졌다고 묘사하세요.",
+                    "가마 앞뒤에 달린 둥근 수정구슬(센서)이 사람의 눈처럼 길을 살피고, 보이지 않는 번개 기운이 뇌 역할을 하여 저절로 바퀴를 굴린다고 비유하세요.",
+                    "고삐를 잡지 않고 그저 자리에 앉아 '한양으로 가자!' 하고 목적지를 말하면 가마가 스스로 길을 찾아 달린다고 조작법을 설명하세요.",
+                    "운전을 할 줄 모르는 어린아이나 몸이 불편한 노인도 편안히 자리에 누워 먼 뱃길과 산길을 순식간에 이동할 때 쓴다고 설명하세요.",
+                    "밤낮으로 마부가 고생할 필요도 없고, 서로 부딪히는 사고(안전)도 막아주어 백성들의 발이 되어주는 혁신적인 발명품이라 가치를 말해주세요."
+                ]
             },
             { 
-                word: "비행기", 
-                desc: "하늘을 가르는 은빛 커다란 철새", 
-                hint: "1단계: 가벼운 은빛 쇳덩이로 만든 거대한 날개를 단 철새 모양을 설명하세요. 2단계: 날개 아랫구멍으로 강한 바람을 마구 뿜어내어 가마를 하늘 높이 띄우는 원리를 비유해보세요. 3단계: 구름 너머 먼 이웃 나라까지 수백 명의 보따리 장수와 백성들을 한 번에 안전하게 옮겨주는 하늘 배라고 알려주세요!" 
+                word: "드론", 
+                hints: [
+                    "크기는 새매만 하고, 몸통에 바람개비(날개)가 네 개 달린 날렵한 은빛 '쇳덩이 새'나 '날아다니는 작은 무쇠 쟁반'이라고 외형을 묘사하세요.",
+                    "바람개비가 매섭게 회전하며 회오리바람을 일으키고, 하늘로 번쩍 떠올라 스스로 날갯짓 없이도 구름 위를 맴도는 원리라고 알려주세요.",
+                    "멀리서 사람이 두 손에 쥔 작은 요술 상자의 단추를 밀고 당기면, 하늘의 무쇠 새가 그 손짓에 맞춰 이리저리 방향을 꺾는다고 하세요.",
+                    "사람이 가기 힘든 험한 산봉우리의 풍경을 그림으로 담아오거나, 강 건너 마을에 작은 서찰이나 약재를 순식간에 배달할 때 쓴다고 하세요.",
+                    "위험한 절벽 위 사람을 구하거나 농밭에 약을 골고루 뿌려주어, 백성들의 생명을 살리고 굶주림을 막아주는 고마운 발명품이라 하세요."
+                ]
+            },
+            { 
+                word: "스마트워치", 
+                hints: [
+                    "손목에 차는 작고 둥근(혹은 네모난) 모양이며, 빛나는 유리가 박힌 '손바닥 반만 한 요술 해시계'나 '작은 팔찌 상자'라고 묘사하세요.",
+                    "태엽을 감지 않아도 번개 기운을 먹고 화면이 계속 깨어 있으며, 사람의 맥박(피의 흐름)을 스스로 읽어내는 신묘한 도술을 부린다 하세요.",
+                    "유리를 손가락 끝으로 톡톡 건드리거나 쓱 밀면 그림이 바뀌고, 시계를 향해 말을 걸어 명을 내린다고 조작하는 모습을 비유하세요.",
+                    "시간을 보는 것은 물론이고, 내 심장이 얼마나 뛰는지 건강을 살피고, 멀리서 온 짤막한 편지를 걸으면서 바로 읽어볼 때 쓴다 하세요.",
+                    "무거운 거울 상자(스마트폰)를 주머니에서 꺼낼 필요 없이, 찰나의 시간도 아끼며 내 몸의 건강을 매일 지켜주는 평안한 도구라고 칭찬하세요."
+                ]
+            },
+            { 
+                word: "키오스크", 
+                hints: [
+                    "주막이나 상점 입구에 사람 키만 하게 서 있는 커다랗고 평평한 '네모난 나무/무쇠 기둥'이나 '반짝이는 빛의 거울 판'이라고 묘사하세요.",
+                    "사람 점원 대신, 번개 기운으로 돌아가는 화면 속에 국밥과 떡 등 주막의 온갖 메뉴 그림이 스스로 떠올라 있는 원리라고 비유하세요.",
+                    "주모를 소리쳐 부르지 않고, 내가 먹고 싶은 국밥 그림을 손가락 끝으로 쿡 누른 뒤 엽전(카드)을 구멍에 쏙 넣는다고 행동을 알려주세요.",
+                    "사람이 붐비는 주막에서 주모가 일일이 주문을 외우지 않고도, 손님이 직접 쉽고 정확하게 음식을 시키고 셈(계산)을 치를 때 쓴다 하세요.",
+                    "점원의 수고를 덜어주고, 손님들도 기다리는 시간을 크게 줄여주어 상업과 장터의 발전을 이루는 편리한 기둥이라 가치를 뽐내세요."
+                ]
+            },
+            { 
+                word: "배달로봇", 
+                hints: [
+                    "허리까지 오는 크기에 네 개의 작은 바퀴가 달리고 위에는 뚜껑이 있는 '움직이는 네모난 무쇠 거북이'나 '스스로 굴러가는 보물 상자'라 묘사하세요.",
+                    "사람이 밀지 않아도, 구슬 같은 눈(센서)으로 길가의 돌멩이와 사람을 요리조리 피해가며 부지런히 바퀴를 굴리는 원리를 비유하세요.",
+                    "목적지에 도착하면 삐약삐약 새소리를 내어 사람을 부르고, 암호를 대면 등딱지(뚜껑)가 스르르 열리며 음식을 내어준다고 알려주세요.",
+                    "주막에서 시킨 따뜻한 국밥이나 무거운 짐을 수십 리 밖의 내 집 대문 앞까지 사람을 대신해 안전하게 날라다 주는 심부름꾼이라 하세요.",
+                    "한겨울이나 폭우가 쏟아질 때 사람이 위험하게 뛰어다니지 않게 생명을 보호하고, 온 마을을 편안하게 돕는 성실한 철인(거북이)이라 하세요."
+                ]
             }
         ];
 
-        // 중앙 어플리케이션 상태 제어 상자
+        // 상태 관리 (5단계로 확장)
         const state = {
-            currentTopic: "",
-            currentStep: 1, // 1: 모양, 2: 원리, 3: 쓰임새
+            currentWord: null, // 객체 자체를 저장
+            currentStep: 1,    // 1~5단계
             understandingScore: 0,
             messages: [],
             isLoading: false,
             emotion: "confused" // confused, thinking, nodding, happy
         };
 
-        // DOM 제어 바인딩 및 선택자
         let elements = {};
 
-        // 안전장치: 자바스크립트 오류 포착기
         window.onerror = function (msg, url, line) {
             const banner = document.getElementById("debugErrorBanner");
-            const text = document.getElementById("debugErrorMessage");
-            if (banner && text) {
+            if (banner) {
                 banner.classList.remove("hidden");
-                text.innerText = `${msg} (줄번호: ${line})`;
+                document.getElementById("debugErrorMessage").innerText = `${msg} (Line: ${line})`;
             }
             return false;
         };
 
-        // 선비 일러스트 동적 SVG 렌더링 함수
         function renderScholarSVG(emotion, score) {
-            let faceHTML = "";
-            let handsHTML = "";
-            let moodLabel = "전혀 모르겠음 🤯";
-            let quote = "";
+            let faceHTML = ""; let handsHTML = ""; let moodLabel = ""; let quote = "";
 
             if (emotion === "confused") {
                 faceHTML = `
@@ -401,7 +390,7 @@
                 `;
                 handsHTML = `<path d="M50 150 Q100 162, 150 150" stroke="#2C2C2C" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" />`;
                 moodLabel = "아직 감이 안 옴 🤯";
-                quote = `"${state.currentTopic || '배움'}...? 그것이 도대체 짐승의 이름이오, 사람 이름이오? 서책에는 단 한 자도 없구려."`;
+                quote = `"그것이 도대체 무슨 말이오? 짐승이오, 기물이오, 아니면 허상이오?"`;
             } else if (emotion === "thinking") {
                 faceHTML = `
                     <path d="M85 96 L93 94" stroke="#1A1A1A" stroke-width="3.5" stroke-linecap="round" />
@@ -415,7 +404,7 @@
                     <path d="M80 150 Q75 125, 95 120" stroke="#2C2C2C" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
                 `;
                 moodLabel = "골똘히 생각 중 🤔";
-                quote = `"유생의 모양 이야기를 듣고 보니, 대충 눈앞에 상자는 그려지나 아직 어떻게 작동하는지 묘연하구려."`;
+                quote = `"유생의 말을 듣고 눈을 감으니 머릿속에 그림이 살짝 스쳐 지나가오."`;
             } else if (emotion === "nodding") {
                 faceHTML = `
                     <path d="M84 96 Q90 102, 96 96" stroke="#1A1A1A" stroke-width="4" fill="none" stroke-linecap="round" />
@@ -424,7 +413,7 @@
                 `;
                 handsHTML = `<path d="M50 150 Q100 162, 150 150" stroke="#2C2C2C" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" />`;
                 moodLabel = "어렴풋이 이해 중 🧐";
-                quote = `"하늘의 번개 기운을 담아 상자를 깨우다니 놀랍구려! 이제 마지막으로 왜 이걸 유용하게 쓰는지 알려주게!"`;
+                quote = `"그렇군, 그렇군! 사람의 지혜로 그런 놀라운 조화를 부릴 수 있단 말이오?"`;
             } else if (emotion === "happy") {
                 faceHTML = `
                     <path d="M82 96 Q90 102, 96 96" stroke="#1A1A1A" stroke-width="4.5" fill="none" stroke-linecap="round" />
@@ -438,434 +427,283 @@
                     <path d="M150 150 Q175 135, 170 120" stroke="#2C2C2C" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
                 `;
                 moodLabel = "완벽히 깨달음! 🤩";
-                quote = `"이제야 온전히 가슴이 시원하구려! 참으로 똑똑한 현대 유생을 곁에 둔 것 같소!"`;
+                quote = `"만세! 드디어 온 세상의 이치가 내 머리에 밝게 빛나는구려!"`;
             }
 
-            const fullSVG = `
+            elements.scholarSvgContainer.innerHTML = `
                 <svg viewBox="0 0 200 200" class="w-full h-full">
-                    <!-- 그림자 원 -->
                     <circle cx="100" cy="130" r="45" fill="#e8e4db" />
-
-                    <!-- 선비 도포 옷자락 -->
                     <path d="M50 170 C50 120, 150 120, 150 170 Z" fill="#F8F8F6" stroke="#2C2C2C" stroke-width="5" />
                     <path d="M100 120 L83 170 M100 120 L117 170" stroke="#2C2C2C" stroke-width="3" />
                     <path d="M100 135 L90 170" stroke="#991B1B" stroke-width="4" />
-
-                    <!-- 실시간 동적 팔 위치 -->
                     ${handsHTML}
-
-                    <!-- 얼굴형 단지 -->
                     <circle cx="100" cy="95" r="32" fill="#FFEFE0" stroke="#2C2C2C" stroke-width="5" />
-
-                    <!-- 실시간 동적 얼굴 표정 -->
                     ${faceHTML}
-
-                    <!-- 콧수염 및 선비 수염 -->
                     <path d="M92 113 Q100 136, 108 113" fill="none" stroke="#2C2C2C" stroke-width="4.5" stroke-linecap="round" />
                     <path d="M89 110 L87 124" stroke="#2C2C2C" stroke-width="3" />
                     <path d="M111 110 L113 124" stroke="#2C2C2C" stroke-width="3" />
-
-                    <!-- 갓모 및 넓은 갓 창 -->
                     <path d="M78 64 L81 42 C83 26, 117 26, 119 42 L122 64 Z" fill="#222222" stroke="#2C2C2C" stroke-width="2" />
                     <ellipse cx="100" cy="64" rx="64" ry="12" fill="#222222" stroke="#2C2C2C" stroke-width="1.5" />
                     <path d="M48 66 Q100 148, 152 66" fill="none" stroke="#222222" stroke-width="2" stroke-dasharray="3,3" />
                     <path d="M100 107 L100 142" stroke="#222222" stroke-width="2" />
                 </svg>
             `;
-
-            elements.scholarSvgContainer.innerHTML = fullSVG;
-            elements.scholarStatusBadge.innerText = `${moodLabel} (이해도: ${score}%)`;
+            elements.scholarStatusBadge.innerText = `${moodLabel} (${score}%)`;
             elements.scholarMoodQuote.innerText = quote;
         }
 
-        // 어린이용 주제 주머니 렌더링
         function renderWordSelection() {
             elements.wordsGrid.innerHTML = "";
-            KIDS_WORDS.forEach(function (wordObj) {
+            KIDS_WORDS.forEach(wObj => {
                 const btn = document.createElement("button");
-                btn.setAttribute("type", "button");
-                btn.className = "bg-amber-100 hover:bg-amber-200 text-stone-900 border-2 border-stone-800 text-xs md:text-sm px-4 py-2.5 rounded-2xl transition shadow-md font-sans font-black flex items-center gap-1.5 transform hover:-translate-y-1 active:scale-95 duration-200 cursor-pointer";
-                btn.innerHTML = `<span>💰</span> ` + wordObj.word;
-                btn.onclick = function (e) {
-                    e.preventDefault();
-                    selectTopic(wordObj);
-                };
+                btn.type = "button";
+                btn.className = "bg-amber-100 hover:bg-amber-200 text-stone-900 border-2 border-stone-800 text-[11px] sm:text-xs px-3 py-2 rounded-2xl transition shadow-md font-sans font-black flex items-center transform hover:-translate-y-1 active:scale-95 cursor-pointer";
+                btn.innerHTML = wObj.word;
+                btn.onclick = (e) => { e.preventDefault(); selectTopic(wObj); };
                 elements.wordsGrid.appendChild(btn);
             });
         }
 
-        // 설명할 현대 배움 주제 선택 및 시작
-        function selectTopic(wordObj) {
-            try {
-                state.currentTopic = wordObj.word;
-                state.currentStep = 1;
-                state.understandingScore = 0;
-                state.emotion = "confused";
-                
-                state.messages = [
-                    {
-                        sender: "scholar",
-                        text: `오호라! 이번 배움의 기물은 바로 '${wordObj.word}'(이)로군! 내 평생 들어보지 못한 기묘한 이름이오.\n\n[1단계: 모양 설명방]에 들어오신 것을 환영하오! 먼저 이 물건이 손에 만져지는 단단한 물건이오? 쇠나 가죽, 유리, 나무 중 어떤 재료로 빚어 만든 기물이며, 어떤 겉모습을 가졌는지 시각적으로 알려주겠소?`
-                    }
-                ];
-
-                updateUI();
-                
-                // 힌트 활성화
-                elements.dynamicHintText.innerText = wordObj.hint;
-                elements.dynamicHintBox.classList.remove("hidden");
-
-                // 입력창 초기화 및 활성화
-                elements.chatInput.value = "";
-                elements.chatInput.placeholder = "예: 손바닥만 하고 반짝이는 유리가 박힌 평평한 은빛 상자 모양이오.";
-                setTimeout(function () {
-                    if (elements.chatInput) elements.chatInput.focus();
-                }, 150);
-            } catch (err) {
-                window.onerror(err.message, "", 0);
-            }
+        function selectTopic(wObj) {
+            state.currentWord = wObj;
+            state.currentStep = 1;
+            state.understandingScore = 0;
+            state.emotion = "confused";
+            state.messages = [{
+                sender: "scholar",
+                text: `오호라! '${wObj.word}'(이)로군! 내 평생 들어보지 못한 기묘한 단어구려.\n\n[1단계: 본질과 외형]부터 시작해보세. 이것이 손에 만져지는 단단한 물건이오, 아니면 눈에 보이지 않는 허상이나 기운 같은 것이오? 눈앞에 그려지듯 외형을 묘사해주시오!`
+            }];
+            updateUI();
+            setTimeout(() => elements.chatInput.focus(), 150);
         }
 
-        // 단계별 입력 내용 로컬 판정 및 채점기 (초등·중등 수준 맞춤 최적화)
-        function evaluateStepContent(inputText, topic, step) {
+        // 30개 이상의 폭넓은 키워드 매칭 로직 (5단계 대응)
+        function evaluateStepContent(inputText, wordObj, step) {
             const text = inputText.trim();
-            let scoreGain = 0;
-            let response = "";
-            let feedback = "";
-            let nextStep = step;
-            let emotion = "confused";
+            let scoreGain = 0; let response = ""; let feedback = ""; let nextStep = step; let emotion = "confused";
 
-            // 금지어 감지 필터 (기계 및 현대 첨단 용어)
-            const banWords = [
-                "스마트폰", "컴퓨터", "인터넷", "게임", "유튜브", "배달앱", "자동차", "비행기", 
-                "디지털", "데이터", "무선", "와이파이", "프로그램", "앱", "애플리케이션", 
-                "액정", "화면", "배터리", "센서", "인공지능", "모바일", "충전기", "전자기기"
-            ];
-            
-            // 토픽 자체를 제외한 다른 금지어 탐색
-            const detectedBans = banWords.filter(function (bw) {
-                return bw !== topic && text.includes(bw);
-            });
+            const banWords = ["스마트폰", "컴퓨터", "인터넷", "게임", "유튜브", "디지털", "데이터", "무선", "와이파이", "프로그램", "앱", "액정", "화면", "배터리", "센서", "스마트", "모바일", "충전", "네트워크", "소프트웨어", "하드웨어"];
+            const detectedBans = banWords.filter(bw => bw !== wordObj.word && text.includes(bw));
 
-            if (text.length < 5) {
+            if (text.length < 10) {
                 return {
-                    response: `유생, 성의를 조금만 더 보태어 최소 다섯 글자 이상 상세히 말해주겠소? 머릿속에 도무지 상상화가 그려지지 않는구려.`,
-                    feedback: "너무 짧게 쓰면 선비님은 전혀 이해할 수 없습니다. 겉모습의 크기나 재질을 더 길게 서술해 보세요!",
-                    scoreGain: 0,
-                    nextStep: step,
-                    emotion: "confused"
+                    response: `유생, 성의를 조금만 더 보태어 길게 서술해주겠소? 단어 몇 개만으로는 상상이 안 가오.`,
+                    feedback: "문장이 너무 짧습니다. 훈장님의 힌트를 보고 한 줄 이상 길게 써보세요!",
+                    scoreGain: 0, nextStep: step, emotion: "confused"
                 };
             }
-
             if (detectedBans.length > 0) {
                 return {
-                    response: `보시오 유생, 그대가 말한 문장에 단어 '${detectedBans[0]}'이(가) 포함되어 있구려! 그런 어려운 옛 서적에도 없는 요상한 단어는 내 귀에 한 줄기 바람처럼 스쳐 갈 뿐 이해되지 않소. 부디 나도 아는 옛말이나 우리말 표현으로 순화해 알려주시오!`,
-                    feedback: `'${detectedBans[0]}' 단어는 선비님이 아예 모르는 금지 단어입니다! 이를 '투명한 유리', '움직이는 가상 마당' 등으로 풀어서 써주세요.`,
-                    scoreGain: -5,
-                    nextStep: step,
-                    emotion: "confused"
+                    response: `잠깐! '${detectedBans[0]}'이라는 요상한 단어는 서책에 없소. 옛말로 순화하여 빗대어 주시오!`,
+                    feedback: `'${detectedBans[0]}'는 선비님이 모르는 현대어입니다! 이를 쇳덩이, 번개, 거울 등의 비유로 바꾸세요.`,
+                    scoreGain: -5, nextStep: step, emotion: "confused"
                 };
             }
 
-            // 1단계 평가: 모양과 재질 묘사
-            if (step === 1) {
-                const shapeKeywords = ["모양", "상자", "둥글", "납작", "두께", "크기", "손바닥", "유리", "거울", "쇳덩이", "나무", "가죽", "종이", "가볍", "무겁", "은빛", "판판", "액자", "쇳조각"];
-                const matchCount = shapeKeywords.filter(function (kw) { return text.includes(kw); }).length;
+            // 각 단계별 30여 개 인식 키워드 풀
+            const kw1 = ["형체","모양","상자","둥글","납작","크기","손바닥","유리","거울","쇳덩이","무형","생각","영혼","공간","그림자","환상","보이지","만질","두께","가볍","무겁","은빛","판판","허상","기운","나무","종이","방","끈","그물","안경","수레","새","팔찌","기둥","거북"];
+            const kw2 = ["번개","기운","벼락","불타는","힘","바람","물결","하늘","빛","동력","돌려","밀어","스스로","저절로","요술","부적","도술","톱니","태엽","그림자","신기루","불씨","태양","별빛","구름","뇌성","진동","울림","기계","수정","회오리","날개","맥박"];
+            const kw3 = ["단추","누르","건드리","만지","손가락","목소리","말","부르","명령","지시","눈짓","손짓","쓰다듬","쥐고","잡고","밟고","외치","붓","먹","종이","두드리","열고","닫고","쓰기","읽기","말하기","듣기","소리치","속삭이","암호","엽전","구멍"];
+            const kw4 = ["친구","이웃","편지","소식","서로","나누","멀리","순식간","찾아","놀이","그림","소리","요술","장기판","가마","이동","음식","심부름","구경","계산","셈","책","서책","기록","기억","돕고","대신","편안","빠르","쉽게","약재","국밥"];
+            const kw5 = ["세상","백성","조선","나라","팔도","모두","함께","미래","내일","변화","발전","평안","풍요","지혜","깨달음","연결","하나","기쁨","웃음","편리","시간","절약","목숨","안전","평화","번영","안락","태평","성대","혁신","생명","장터"];
 
-                if (matchCount >= 2 || text.length >= 20) {
-                    scoreGain = 30;
-                    nextStep = 2;
-                    emotion = "thinking";
-                    response = `허허! 아주 훌륭하오. 손목에 쥐기 알맞고 번쩍이는 유리가 달린 무쇠 상자 모양이라니, 드디어 손에 만져질 듯 눈앞에 그 형체가 우뚝 서는구려!\n\n그럼 이제 다음 관문인 [2단계: 원리 설명방]으로 이동하겠소. 말이나 소도 없는데 이 기이한 상자가 대체 어떤 신비한 자연물이나 비유적인 힘을 받아 빛이 켜지고 작동하는지 알려주겠소?`;
-                    feedback = "성공이오! 선비님이 상자의 겉모습 상상에 성공했습니다. 이제 2단계 힌트를 활용해 전기나 에너지를 자연물에 빗대어 설명해주세요.";
-                } else {
-                    response = `그 기물이 어떤 감촉이오? 가볍소, 혹은 거대하오? 돌로 깎은 듯 단단한가, 가죽처럼 질긴가? 겉모습과 크기를 좀 더 자세히 묘사해주어야 상상할 수 있겠소.`;
-                    feedback = "선비님이 상상할 수 있도록 모양, 재료, 무겁고 가벼운 정도의 특징 단어들을 최소 2개 이상 넣어 문장으로 서술하세요.";
-                }
-            } 
-            // 2단계 평가: 원리와 작동 방식 비유
-            else if (step === 2) {
-                const energyKeywords = ["번개", "벼락", "기운", "기름", "불타는", "힘", "바람", "물결", "하늘", "빛", "단추", "누르", "건드리", "만지", "동력", "돌려", "밀어", "손가락"];
-                const matchCount = energyKeywords.filter(function (kw) { return text.includes(kw); }).length;
+            let matchCount = 0;
+            if (step === 1) matchCount = kw1.filter(kw => text.includes(kw)).length;
+            else if (step === 2) matchCount = kw2.filter(kw => text.includes(kw)).length;
+            else if (step === 3) matchCount = kw3.filter(kw => text.includes(kw)).length;
+            else if (step === 4) matchCount = kw4.filter(kw => text.includes(kw)).length;
+            else if (step === 5) matchCount = kw5.filter(kw => text.includes(kw)).length;
 
-                if (matchCount >= 2 || text.length >= 25) {
-                    scoreGain = 30;
-                    nextStep = 3;
-                    emotion = "nodding";
-                    response = `오호라! 하늘에서 맹렬히 치는 '번개 기운'을 상자 안에 잠시 가두어 두고, 손가락으로 거울 유리를 톡 건드릴 때마다 상자가 그 기운을 불살라 환한 광채를 낸다는 말이군! 참으로 소름 돋게 놀라운 묘책이오.\n\n드디어 마지막 관문인 [3단계: 쓰임새방]에 당도하였소! 그렇다면 이 신기한 번개 상자로 우리 백성들과 유생들은 어떤 유익하고 요술 같은 편리한 일을 해내는지 목적과 쓰임새를 알려주시오!`;
-                    feedback = "대단합니다! 선비님이 원리를 어렴풋이 정복했습니다. 이제 마지막 3단계 비서실 힌트를 보며 생활 속 목적을 자세히 알려주세요!";
-                } else {
-                    response = `스스로 빛나고 움직인다고 하였는데, 대체 그 무쇠가 어디서 힘을 빌려오는 것이오? 혹시 하늘의 바람 기운인가, 아니면 불타는 기름 숯덩이의 힘인가? 알기 쉽게 빗대어 주시오!`;
-                    feedback = "선비님이 기계 엔진이나 전류를 연상하도록 '번개 기운', '불타는 힘', '손가락 단추' 같은 쉬운 비유를 더해 보세요.";
-                }
-            } 
-            // 3단계 평가: 사용 가치와 인간의 목적
-            else if (step === 3) {
-                const usageKeywords = ["친구", "이웃", "편지", "소식", "서로", "나누", "멀리", "순식간", "찾아", "놀이", "쇳놀이", "그림", "소리", "요술", "도서관", "장기판", "가마", "이동", "음식", "심부름"];
-                const matchCount = usageKeywords.filter(function (kw) { return text.includes(kw); }).length;
-
-                if (matchCount >= 2 || text.length >= 25) {
-                    scoreGain = 40;
-                    nextStep = 4; // 대성공 상태
-                    emotion = "happy";
-                    response = `이제야 이해가 되는구려.\n\n처음에는 너무 많은 것을 생략하여 무슨 말인지 알 수 없었소.\n\n상대가 모르는 내용을 설명할 때는\n\n배경부터\n차근차근\n구체적으로\n\n설명해야 하는 법이오. 이것이 좋은 설명의 힘이구려.`;
-                    feedback = "🎉 프롬프트 대성공! 선비님이 무릎을 탁 치며 온전히 이해하셨습니다! 당신은 최고의 설명가입니다.";
-                } else {
-                    response = `이 상자로 도대체 조선 팔도의 백성들이 무슨 즐거운 일을 도모하는 것이오? 편지를 전달하는가, 장기판 놀이를 즐기는가, 주막 음식 심부름을 시키는가? 쓰임새를 더 알려주게나!`;
-                    feedback = "마지막 설명이 부족합니다! 옛날의 소통 도구(편지, 파발)나 놀이(장기, 윷놀이) 등에 빗대어 사람들이 편리하게 누리는 점을 2개 이상 말해주세요.";
-                }
+            if (matchCount >= 2 || text.length >= 25) { // 정답 인정 기준
+                scoreGain = 20; // 5단계이므로 단계당 20점
+                nextStep = step + 1;
+                emotion = step === 5 ? "happy" : (step % 2 === 0 ? "nodding" : "thinking");
+                
+                const responses = [
+                    "", // 0 (안 씀)
+                    `좋소! 눈에 보이는 기물인지 보이지 않는 환상인지 외형의 뼈대가 드디어 잡히는구려. \n\n자, 다음 [2단계: 동력과 원리] 방이오. 이것이 기계의 톱니바퀴로 움직이는지, 하늘의 번개나 도술 같은 신비한 힘을 쓰는지 그 원리를 설명해주시오!`,
+                    `아하, 그런 기이한 힘을 빌려 움직인단 말이군. 조금씩 이치가 뚫리고 있소! \n\n[3단계: 조작과 소통] 방으로 넘어가겠소. 그렇다면 사람이 이것을 다룰 때, 손가락으로 누르는지 아니면 목소리로 명을 내리는지 인간이 소통하는 방법을 알려주시오!`,
+                    `신기하군! 사람의 몸짓과 목소리에 반응하다니 요물이 따로 없소. \n\n이제 [4단계: 목적과 쓰임새] 방이오. 도대체 우리 백성들이 이 신묘한 것을 일상에서 직접 어디에, 왜 써먹는지 그 구체적인 쓰임새를 알려주시오!`,
+                    `오호, 편지를 전하고 심부름을 하는 등 그렇게 쓰이는 것이었군! 거의 다 왔소.\n\n마지막 [5단계: 사회적 가치와 미래] 방이오. 이것이 결국 앞으로 조선 팔도 백성들의 삶을 어떻게 이롭게 하고 변화시킬지 거창하게 자랑을 늘어놓아 보시오!`,
+                    `만세!! 그대의 다섯 단계 친절한 설명 덕에 내 가슴의 막힌 체증이 뻥 뚫렸소! \n\n눈에 보이지 않는 최신 문물이라도 본질, 힘의 원리, 다루는 법, 일상 쓰임새, 그리고 널리 세상을 이롭게 하는 가치까지 차례로 들으니 이제 완벽히 깨달았소. 진정한 설명의 장인이오!`
+                ];
+                response = responses[step];
+                feedback = step === 5 ? "🎉 대성공! 5단계를 완벽하게 수료했습니다!" : "통과! 다음 힌트를 확인하고 묘사를 계속 이어나가세요.";
+            } else {
+                response = `아직 그림이 선명하지 않소. 어떤 단어를 더 비유하면 좋을지 조금만 더 구체적으로 풀어 써주시오.`;
+                feedback = `설명이 아직 부족합니다. 좌측 훈장님의 [${step}단계 맞춤 힌트]를 읽고 해당되는 특징 단어를 더 많이 포함해 보세요!`;
             }
 
-            return {
-                response: response,
-                feedback: feedback,
-                scoreGain: scoreGain,
-                nextStep: nextStep,
-                emotion: emotion
-            };
+            return { response, feedback, scoreGain, nextStep, emotion };
         }
 
-        // 전체 화면 UI 새로고침 전담 관리기
         function updateUI() {
-            try {
-                // 대화 진행 로그 출력
-                elements.dialogueLog.innerHTML = "";
-                state.messages.forEach(function (msg) {
-                    const msgDiv = document.createElement("div");
-                    const isUser = (msg.sender === "user");
-                    
-                    msgDiv.className = `flex flex-col ` + (isUser ? 'items-end' : 'items-start') + ` transition-all duration-300`;
-                    
-                    const bubble = document.createElement("div");
-                    bubble.className = `max-w-[85%] rounded-3xl px-5 py-4 shadow-md leading-relaxed ` + 
-                        (isUser 
-                            ? 'bg-stone-800 text-stone-100 rounded-tr-none font-sans text-sm font-semibold' 
-                            : 'bg-[#FAF7F0] text-stone-950 border-2 border-stone-300 rounded-tl-none font-serif text-base');
-                    
-                    if (!isUser) {
-                        bubble.style.backgroundImage = "url('https://www.transparenttextures.com/patterns/soft-wallpaper.png')";
-                    }
-                    
-                    // 개행 문자 변환
-                    bubble.innerHTML = msg.text.replace(/\n/g, "<br>");
-                    msgDiv.appendChild(bubble);
+            elements.dialogueLog.innerHTML = "";
+            state.messages.forEach(msg => {
+                const div = document.createElement("div");
+                const isUser = msg.sender === "user";
+                div.className = `flex flex-col ${isUser ? 'items-end' : 'items-start'} transition-all duration-300`;
+                
+                const bubble = document.createElement("div");
+                bubble.className = `max-w-[85%] rounded-3xl px-5 py-3 shadow-md leading-relaxed ${isUser ? 'bg-stone-800 text-stone-100 rounded-tr-none font-sans text-sm font-semibold' : 'bg-[#FAF7F0] text-stone-950 border-2 border-stone-300 rounded-tl-none font-serif text-[15px]'}`;
+                if(!isUser) bubble.style.backgroundImage = "url('https://www.transparenttextures.com/patterns/soft-wallpaper.png')";
+                bubble.innerHTML = msg.text.replace(/\n/g, "<br>");
+                div.appendChild(bubble);
 
-                    const label = document.createElement("span");
-                    label.className = "text-[10px] text-stone-500 mt-1.5 px-2 font-sans font-bold";
-                    label.innerText = isUser ? "유생의 붓글씨 설명" : "조선 선비 AI";
-                    msgDiv.appendChild(label);
+                const label = document.createElement("span");
+                label.className = "text-[10px] text-stone-500 mt-1 px-2 font-sans font-bold";
+                label.innerText = isUser ? "유생의 묘사" : "선비 AI";
+                div.appendChild(label);
 
-                    elements.dialogueLog.appendChild(msgDiv);
-                });
+                elements.dialogueLog.appendChild(div);
+            });
 
-                // 대화창 최하단으로 자동 스크롤
-                setTimeout(function () {
-                    elements.dialogueLog.scrollTop = elements.dialogueLog.scrollHeight;
-                }, 100);
+            setTimeout(() => elements.dialogueLog.scrollTop = elements.dialogueLog.scrollHeight, 100);
 
-                // 이해도 게이지 바 업데이트
-                elements.progressBar.style.width = state.understandingScore + "%";
-                elements.progressBarText.innerText = "선비님의 이해도: " + state.understandingScore + "%";
+            elements.progressBar.style.width = state.understandingScore + "%";
+            elements.progressBarText.innerText = "이해도: " + state.understandingScore + "%";
 
-                // 헤더 및 현황판 제어
-                if (state.currentTopic) {
-                    elements.topicIndicator.innerText = "주제: " + state.currentTopic;
-                    elements.topicIndicator.classList.remove("hidden");
-                    elements.topicWarning.classList.add("hidden");
-                    elements.stepNavigator.classList.remove("hidden");
-                    elements.chatForm.classList.remove("hidden");
-                    elements.topicSelectContainer.classList.add("hidden");
-                    elements.resetBtn.classList.remove("hidden");
-                } else {
-                    elements.topicIndicator.classList.add("hidden");
-                    elements.topicWarning.classList.remove("hidden");
-                    elements.stepNavigator.classList.add("hidden");
-                    elements.chatForm.classList.add("hidden");
-                    elements.topicSelectContainer.classList.remove("hidden");
-                    elements.resetBtn.classList.add("hidden");
-                }
-
-                // 단계별 안내 탭 색상 변화
-                updateStepTabs();
-
-                // 선비 캐릭터 감정 및 속마음 업데이트
-                renderScholarSVG(state.emotion, state.understandingScore);
-
-                // 대성공 팝업창 활성화 판정
-                if (state.understandingScore >= 100) {
-                    elements.successOverlay.classList.remove("hidden");
-                } else {
-                    elements.successOverlay.classList.add("hidden");
-                }
-            } catch (err) {
-                window.onerror(err.message, "", 0);
+            if (state.currentWord) {
+                elements.topicIndicator.innerText = "주제: " + state.currentWord.word;
+                elements.topicIndicator.classList.remove("hidden");
+                elements.topicWarning.classList.add("hidden");
+                elements.stepNavigator.classList.remove("hidden");
+                elements.chatForm.classList.remove("hidden");
+                elements.topicSelectContainer.classList.add("hidden");
+                elements.resetBtn.classList.remove("hidden");
+                elements.dynamicHintBox.classList.remove("hidden");
+                
+                // 동적 힌트 반영
+                const stepIdx = Math.min(state.currentStep, 5) - 1;
+                document.getElementById("hintStepLabel").innerText = `${state.currentStep}단계`;
+                elements.dynamicHintText.innerText = state.currentWord.hints[stepIdx];
+            } else {
+                elements.topicIndicator.classList.add("hidden");
+                elements.topicWarning.classList.remove("hidden");
+                elements.stepNavigator.classList.add("hidden");
+                elements.chatForm.classList.add("hidden");
+                elements.topicSelectContainer.classList.remove("hidden");
+                elements.resetBtn.classList.add("hidden");
+                elements.dynamicHintBox.classList.add("hidden");
             }
+
+            updateStepTabs();
+            renderScholarSVG(state.emotion, state.understandingScore);
+
+            if (state.understandingScore >= 100) elements.successOverlay.classList.remove("hidden");
+            else elements.successOverlay.classList.add("hidden");
         }
 
-        // 3단계 안내 상단 탭 액티브 표시기
         function updateStepTabs() {
-            const activeClass = "text-stone-900 font-black border-b-2 border-stone-800 pb-1";
-            const normalClass = "text-stone-400 font-medium pb-1";
-
-            // 초기화
-            elements.stepTab1.className = normalClass;
-            elements.stepTab2.className = normalClass;
-            elements.stepTab3.className = normalClass;
+            [1,2,3,4,5].forEach(num => {
+                const tab = document.getElementById("stepTab" + num);
+                if(tab) {
+                    if (state.currentStep === num) {
+                        tab.className = "step-active flex flex-col items-center gap-1";
+                    } else {
+                        tab.className = "step-inactive flex flex-col items-center gap-1";
+                    }
+                }
+            });
 
             const step = state.currentStep;
             if (step === 1) {
-                elements.stepTab1.className = activeClass;
-                elements.stepInputGuide.innerText = "1단계: 이 물건은 크기가 어떻고 겉모양과 재료가 어떤지 선비에게 묘사하시오!";
-                elements.stepAlertBadge.className = "bg-blue-200 text-blue-900 px-2.5 py-0.5 rounded-md font-sans text-[11px] font-bold";
-                elements.stepAlertBadge.innerText = "1단계: 모양과재질";
-                elements.chatInput.placeholder = "예시: 손바닥만 한 둥글고 납작한 거울상자 모양이오.";
+                elements.stepInputGuide.innerText = "1단계: 외형(크기/모양) 또는 눈에 보이지 않는 본질 설명";
+                elements.stepAlertBadge.innerText = "1/5단계";
+                elements.chatInput.placeholder = "예: 눈에 보이지 않는 하늘의 거대한 서고(방)요.";
             } else if (step === 2) {
-                elements.stepTab2.className = activeClass;
-                elements.stepInputGuide.innerText = "2단계: 이 물건은 전지나 에너지 대신 어떤 자연의 힘을 받아 기묘하게 움직이는지 비유하시오!";
-                elements.stepAlertBadge.className = "bg-amber-200 text-amber-900 px-2.5 py-0.5 rounded-md font-sans text-[11px] font-bold";
-                elements.stepAlertBadge.innerText = "2단계: 힘과원리";
-                elements.chatInput.placeholder = "예시: 하늘에서 내리는 번개 기운을 상자 속에 고이 가두어 켜오.";
-            } else if (step >= 3) {
-                elements.stepTab3.className = activeClass;
-                elements.stepInputGuide.innerText = "3단계: 옛날의 장치나 소통방식에 빗대어 사람들이 편리하게 요술을 부리는 최종 쓰임새를 알려주시오!";
-                elements.stepAlertBadge.className = "bg-green-200 text-green-900 px-2.5 py-0.5 rounded-md font-sans text-[11px] font-bold";
-                elements.stepAlertBadge.innerText = "3단계: 쓰임새와가치";
-                elements.chatInput.placeholder = "예시: 멀리 있는 벗과 편지 대신 얼굴을 실시간으로 보며 이야기하오.";
+                elements.stepInputGuide.innerText = "2단계: 에너지를 자연의 기운이나 비유적인 원리로 설명";
+                elements.stepAlertBadge.innerText = "2/5단계";
+                elements.chatInput.placeholder = "예: 번개 기운을 받아 스스로 생각하는 요술을 부리오.";
+            } else if (step === 3) {
+                elements.stepInputGuide.innerText = "3단계: 단추, 터치, 음성 등을 어떻게 사람이 조작하는지 설명";
+                elements.stepAlertBadge.innerText = "3/5단계";
+                elements.chatInput.placeholder = "예: 손가락 끝으로 거울을 쓰다듬으며 소통하오.";
+            } else if (step === 4) {
+                elements.stepInputGuide.innerText = "4단계: 일상 생활에서 사람들이 구체적으로 사용하는 목적 설명";
+                elements.stepAlertBadge.innerText = "4/5단계";
+                elements.chatInput.placeholder = "예: 주막에서 음식 심부름을 안전하게 대신 시키오.";
+            } else if (step >= 5) {
+                elements.stepInputGuide.innerText = "5단계: 조선 팔도의 백성들에게 가져다줄 이로운 가치와 미래";
+                elements.stepAlertBadge.innerText = "5/5단계";
+                elements.chatInput.placeholder = "예: 온 백성이 편안하게 서로 연결되는 태평성대를 이루오.";
             }
         }
 
-        // 한지 서당 전용 토스트 메시지 알림기
         function showToast(message) {
             const toast = document.getElementById("toastBox");
-            const text = document.getElementById("toastMessage");
-            if (toast && text) {
-                text.innerText = message;
+            if (toast) {
+                document.getElementById("toastMessage").innerText = message;
                 toast.classList.remove("hidden");
-                // 애니메이션 트리거
-                setTimeout(function () {
-                    toast.classList.remove("translate-y-10", "opacity-0");
-                }, 50);
-
-                // 3초 후 회수
-                setTimeout(function () {
+                setTimeout(() => toast.classList.remove("translate-y-10", "opacity-0"), 50);
+                setTimeout(() => {
                     toast.classList.add("translate-y-10", "opacity-0");
-                    setTimeout(function () {
-                        toast.classList.add("hidden");
-                    }, 300);
+                    setTimeout(() => toast.classList.add("hidden"), 300);
                 }, 3000);
             }
         }
 
-        // 유생이 전송 버튼을 누를 때 발생하는 제어 기지
         function handleFormSubmit(e) {
             e.preventDefault();
-            
             const rawInput = elements.chatInput.value;
             if (!rawInput.trim() || state.isLoading) return;
 
-            // 유생 메시지 추가
-            state.messages.push({
-                sender: "user",
-                text: rawInput
-            });
-
+            state.messages.push({ sender: "user", text: rawInput });
             elements.chatInput.value = "";
             state.isLoading = true;
             elements.loadingIndicator.classList.remove("hidden");
             elements.submitBtn.disabled = true;
-
             updateUI();
 
-            // 상상 고민 연출 효과 (선비가 고심 끝에 답변하는 연출을 위해 1.2초 지연 가동)
-            setTimeout(function () {
-                const evaluation = evaluateStepContent(rawInput, state.currentTopic, state.currentStep);
-
-                // 점수 계산 및 감정 반영
+            setTimeout(() => {
+                const evaluation = evaluateStepContent(rawInput, state.currentWord, state.currentStep);
+                
                 state.understandingScore = Math.min(100, Math.max(0, state.understandingScore + evaluation.scoreGain));
                 state.currentStep = evaluation.nextStep;
                 state.emotion = evaluation.emotion;
-
-                // 선비 응답 추가
-                state.messages.push({
-                    sender: "scholar",
-                    text: evaluation.response
-                });
-
-                // 훈장 피드백 배너 글씨 수정
+                state.messages.push({ sender: "scholar", text: evaluation.response });
                 elements.feedbackText.innerText = evaluation.feedback;
-
+                
                 state.isLoading = false;
                 elements.loadingIndicator.classList.add("hidden");
                 elements.submitBtn.disabled = false;
-
                 updateUI();
-                showToast("선비님의 상상력이 증가했소! (" + state.understandingScore + "%)");
+                showToast("이해도가 변했소! (" + state.understandingScore + "%)");
+                setTimeout(() => elements.chatInput.focus(), 100);
             }, 1200);
         }
 
-        // 모든 데이터와 진행 상태 완전 리셋
         function triggerReset() {
-            state.currentTopic = "";
+            state.currentWord = null;
             state.currentStep = 1;
             state.understandingScore = 0;
             state.emotion = "confused";
-            state.messages = [
-                {
-                    sender: "scholar",
-                    text: `새로운 기물을 배울 준비가 되었소, 총명한 유생! 아래 주머니 단추들 중 나에게 가르쳐 줄 단어를 다시 하나 쿡 눌러주시오.`
-                }
-            ];
-            elements.feedbackText.innerText = "선비님에게 어떤 물건을 가르쳐 볼까요? 아래 주머니들 중 마음에 드는 단어를 쿡 눌러서 대화를 시작해 보세요!";
-            elements.dynamicHintBox.classList.add("hidden");
-            
+            state.messages = [{ sender: "scholar", text: `새로운 기물을 배울 준비가 되었소! 아래 주머니 단추들 중 나에게 가르쳐 줄 단어를 다시 골라주시오.` }];
+            elements.feedbackText.innerText = "최신 기술 단어를 선택하고 대화를 시작해 보세요!";
             updateUI();
-            showToast("공부 상태를 완전히 처음 상태로 되돌렸소!");
+            showToast("상태가 초기화되었소!");
         }
 
-        // 브라우저 렌더링 준비 완료 시 시동 거는 핵심 생명주기 장치
-        window.addEventListener("DOMContentLoaded", function () {
-            try {
-                // DOM 캐싱 바인딩
-                elements = {
-                    dialogueLog: document.getElementById("dialogueLog"),
-                    progressBar: document.getElementById("progressBar"),
-                    progressBarText: document.getElementById("progressBarText"),
-                    topicIndicator: document.getElementById("topicIndicator"),
-                    topicWarning: document.getElementById("topicWarning"),
-                    topicSelectContainer: document.getElementById("topicSelectContainer"),
-                    wordsGrid: document.getElementById("wordsGrid"),
-                    chatForm: document.getElementById("chatForm"),
-                    chatInput: document.getElementById("chatInput"),
-                    loadingIndicator: document.getElementById("loadingIndicator"),
-                    feedbackText: document.getElementById("feedbackText"),
-                    successOverlay: document.getElementById("successOverlay"),
-                    restartBtn: document.getElementById("restartBtn"),
-                    resetBtn: document.getElementById("resetBtn"),
-                    scholarStatusBadge: document.getElementById("scholarStatusBadge"),
-                    scholarMoodQuote: document.getElementById("scholarMoodQuote"),
-                    dynamicHintBox: document.getElementById("dynamicHintBox"),
-                    dynamicHintText: document.getElementById("dynamicHintText"),
-                    scholarSvgContainer: document.getElementById("scholarSvgContainer"),
-                    stepNavigator: document.getElementById("stepNavigator"),
-                    stepTab1: document.getElementById("stepTab1"),
-                    stepTab2: document.getElementById("stepTab2"),
-                    stepTab3: document.getElementById("stepTab3"),
-                    stepInputGuide: document.getElementById("stepInputGuide"),
-                    stepAlertBadge: document.getElementById("stepAlertBadge"),
-                    submitBtn: document.getElementById("submitBtn")
-                };
+        window.addEventListener("DOMContentLoaded", () => {
+            elements = {
+                dialogueLog: document.getElementById("dialogueLog"), progressBar: document.getElementById("progressBar"),
+                progressBarText: document.getElementById("progressBarText"), topicIndicator: document.getElementById("topicIndicator"),
+                topicWarning: document.getElementById("topicWarning"), topicSelectContainer: document.getElementById("topicSelectContainer"),
+                wordsGrid: document.getElementById("wordsGrid"), chatForm: document.getElementById("chatForm"), chatInput: document.getElementById("chatInput"),
+                loadingIndicator: document.getElementById("loadingIndicator"), feedbackText: document.getElementById("feedbackText"),
+                successOverlay: document.getElementById("successOverlay"), restartBtn: document.getElementById("restartBtn"), resetBtn: document.getElementById("resetBtn"),
+                scholarStatusBadge: document.getElementById("scholarStatusBadge"), scholarMoodQuote: document.getElementById("scholarMoodQuote"),
+                dynamicHintBox: document.getElementById("dynamicHintBox"), dynamicHintText: document.getElementById("dynamicHintText"),
+                scholarSvgContainer: document.getElementById("scholarSvgContainer"), stepNavigator: document.getElementById("stepNavigator"),
+                stepInputGuide: document.getElementById("stepInputGuide"), stepAlertBadge: document.getElementById("stepAlertBadge"), submitBtn: document.getElementById("submitBtn")
+            };
 
-                // 이벤트 리스너 등록
-                elements.chatForm.addEventListener("submit", handleFormSubmit);
-                elements.restartBtn.addEventListener("click", triggerReset);
-                elements.resetBtn.addEventListener("click", triggerReset);
+            elements.chatForm.addEventListener("submit", handleFormSubmit);
+            elements.restartBtn.addEventListener("click", triggerReset);
+            elements.resetBtn.addEventListener("click", triggerReset);
 
-                // 단어 리스트 및 초기 선비 일러스트 렌더링
-                renderWordSelection();
-                renderScholarSVG("confused", 0);
-            } catch (initErr) {
-                window.onerror("초기화 오류: " + initErr.message, "", 0);
-            }
+            renderWordSelection();
+            renderScholarSVG("confused", 0);
         });
     </script>
 </body>
